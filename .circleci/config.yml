@@ -1,0 +1,55 @@
+version: 2.1
+
+setup: << pipeline.parameters.run-setup >>
+
+orbs:
+  path-filtering: circleci/path-filtering@1.0.0
+
+parameters:
+  run-setup:
+    type: boolean
+    default: true
+  run-app1:
+    type: boolean
+    default: false
+  run-app2:
+    type: boolean
+    default: false
+
+jobs:
+  app1:
+    docker:
+      - image: alpine
+    steps:
+      - checkout
+      - run: "echo 'Hello from app1'"
+
+  app2:
+    machine: true
+    steps:
+      - checkout
+      - run: "echo 'Hello from app2'"
+
+workflows:
+  pre:
+    when: << pipeline.parameters.run-setup >>
+    jobs:
+      - path-filtering/filter:
+          # Compare files on main
+          base-revision: main
+          # Config for continuation; herein we reuse this config itself
+          config-path: .circleci/config.yml
+          # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
+          mapping: |
+            .* run-setup false
+            packages/app1/.* run-app1 true
+            packages/app2/.* run-app2 true
+
+  app1:
+    when: << pipeline.parameters.run-app1 >>
+    jobs:
+      - app1
+  app2:
+    when: << pipeline.parameters.run-app2 >>
+    jobs:
+      - app2
