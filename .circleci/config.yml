@@ -24,7 +24,7 @@ jobs:
       - run:
           name: "deploy over ssh"
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd "
+            ssh $SSH_USER@$SSH_HOST "echo 'Hello'"
 
   deploy-app2:
     machine:
