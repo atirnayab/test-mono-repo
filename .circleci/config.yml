@@ -9,23 +9,26 @@ parameters:
   run-setup:
     type: boolean
     default: true
-  run-app1:
+  app1-changed:
     type: boolean
     default: false
-  run-app2:
+  app2-changed:
     type: boolean
     default: false
 
 jobs:
-  app1:
-    docker:
-      - image: alpine
+  deploy-app1:
+    machine:
+      image: ubuntu-2204:2023.07.2
     steps:
-      - checkout
-      - run: "echo 'Hello from app1'"
+      - run:
+          name: "deploy over ssh"
+          command: |
+            ssh $SSH_USER@$SSH_HOST "echo 'Hello world'"
 
-  app2:
-    machine: true
+  deploy-app2:
+    machine:
+      image: ubuntu-2204:2023.07.2
     steps:
       - checkout
       - run: "echo 'Hello from app2'"
@@ -42,14 +45,14 @@ workflows:
           # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
             .* run-setup false
-            packages/app1/.* run-app1 true
-            packages/app2/.* run-app2 true
+            packages/app1/.* app1-changed true
+            packages/app2/.* app2-changed true
 
-  app1:
-    when: << pipeline.parameters.run-app1 >>
+  deploy-app1:
+    when: << pipeline.parameters.app1-changed >>
     jobs:
-      - app1
-  app2:
-    when: << pipeline.parameters.run-app2 >>
+      - deploy-app1
+  deploy-app2:
+    when: << pipeline.parameters.app2-changed >>
     jobs:
-      - app2
+      - deploy-app2
