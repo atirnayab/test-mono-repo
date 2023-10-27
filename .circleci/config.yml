@@ -24,7 +24,7 @@ jobs:
       - run:
           name: "deploy over ssh"
           command: |
-            ssh $SSH_USER@$SSH_HOST "echo 'Hello'"
+            ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app1;yarn build;pm2 restart 0"
 
   deploy-app2:
     machine:
