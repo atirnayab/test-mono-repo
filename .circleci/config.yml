@@ -30,8 +30,10 @@ jobs:
     machine:
       image: ubuntu-2204:2023.07.2
     steps:
-      - checkout
-      - run: "echo 'Hello from app2'"
+      - run:
+          name: "deploy over ssh"
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app2;yarn build;pm2 restart 1"
 
 workflows:
   pre:
