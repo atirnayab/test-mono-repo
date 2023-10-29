@@ -2,7 +2,13 @@
   "name": "test-mono-repo",
   "packageManager": "yarn@3.6.4",
   "private": true,
+  "scripts": {
+    "build": "concurrently 'yarn workspace app1 build' 'yarn workspace app2 build'"
+  },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

@@ -35,6 +35,15 @@ jobs:
           command: |
             ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app2;yarn build;pm2 restart 1"
 
+  deploy-app1-and-app2:
+    machine:
+      image: ubuntu-2204:2023.07.2
+    steps:
+      - run:
+          name: "deploy over ssh"
+          command: |
+            ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;yarn build;pm2 restart 1;pm2 restart 0"
+
 workflows:
   pre:
     when: << pipeline.parameters.run-setup >>
@@ -50,11 +59,25 @@ workflows:
             packages/app1/.* app1-changed true
             packages/app2/.* app2-changed true
 
+  deploy-app1-and-app2:
+    when:
+      and:
+        - << pipeline.parameters.app1-changed >>
+        - << pipeline.parameters.app2-changed >>
+    jobs:
+      - deploy-app1-and-app2
+
   deploy-app1:
-    when: << pipeline.parameters.app1-changed >>
+    when:
+      and:
+        - << pipeline.parameters.app1-changed >>
+        - not: << pipeline.parameters.app2-changed >>
     jobs:
       - deploy-app1
   deploy-app2:
-    when: << pipeline.parameters.app2-changed >>
+    when:
+      and:
+        - << pipeline.parameters.app2-changed >>
+        - not: << pipeline.parameters.app1-changed >>
     jobs:
       - deploy-app2
