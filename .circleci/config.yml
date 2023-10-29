@@ -18,8 +18,8 @@ parameters:
 
 jobs:
   deploy-app1:
-    machine:
-      image: ubuntu-2204:2023.07.2
+    docker:
+      - image: cimg/base:2023.10
     steps:
       - run:
           name: "deploy over ssh"
@@ -27,8 +27,8 @@ jobs:
             ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app1;yarn build;pm2 restart 0"
 
   deploy-app2:
-    machine:
-      image: ubuntu-2204:2023.07.2
+    docker:
+      - image: cimg/base:2023.10
     steps:
       - run:
           name: "deploy over ssh"
@@ -36,8 +36,8 @@ jobs:
             ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app2;yarn build;pm2 restart 1"
 
   deploy-app1-and-app2:
-    machine:
-      image: ubuntu-2204:2023.07.2
+    docker:
+      - image: cimg/base:2023.10
     steps:
       - run:
           name: "deploy over ssh"
