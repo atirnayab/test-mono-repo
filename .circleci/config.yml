@@ -42,7 +42,7 @@ jobs:
       - run:
           name: "deploy over ssh"
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;yarn build;pm2 restart 1;pm2 restart 0"
+            ssh $SSH_USER@$SSH_HOST "cd /home/ec2-user/test-mono-repo;git pull;cd packages/app1;yarn build;cd ../app2;yarn build;pm2 restart 1;pm2 restart 0"
 
 workflows:
   pre:
